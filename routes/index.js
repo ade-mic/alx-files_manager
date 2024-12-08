@@ -1,6 +1,5 @@
-import express from 'express';
 import { Router } from 'express';
-import { appendFile } from 'fs';
+import AppController from '../contollers/AppController';
 
 const router = Router();
 
