@@ -31,23 +31,23 @@ class DBClient {
   isAlive() {
     return this.isConnected;
   }
-  
+
   async nbUsers() {
-    try{
+    try {
       const count = await this.db.collection('users').countDocuments();
       return count;
     } catch (err) {
-      console.error('Error fetching user count:', err)
+      console.error('Error fetching user count:', err);
       return 0;
     }
-  } 
+  }
 
   async nbFiles() {
-    try{
+    try {
       const count = await this.db.collection('files').countDocuments();
       return count;
     } catch (err) {
-      console.error('Error fetching file count:', err)
+      console.error('Error fetching file count:', err);
       return 0;
     }
   }
