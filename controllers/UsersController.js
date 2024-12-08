@@ -22,7 +22,7 @@ class UsersController {
       const result = await dbClient.db.collection('users').insertOne({ email, password: hashedPassword });
 
       return res.status(201).json({
-        id: result.insertId,
+        id: result.insertedId,
         email,
       });
     } catch (error) {
