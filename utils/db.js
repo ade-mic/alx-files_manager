@@ -1,7 +1,4 @@
-import dotenv from 'dotenv';
 import { MongoClient } from 'mongodb';
-
-dotenv.config();
 
 class DBClient {
   constructor() {
@@ -10,49 +7,26 @@ class DBClient {
     const database = process.env.DB_DATABASE || 'files_manager';
     const url = `mongodb://${host}:${port}`;
 
-    this.client = new MongoClient(url);
-
-    // Use a flag to check connection success
-    this.isConnected = false;
-
-    this.client
-      .connect()
-      .then(() => {
-        this.db = this.client.db(database);
-        this.isConnected = true;
-        console.log('Connected to MongoDB successfully');
-      })
-      .catch((err) => {
-        console.error('MongoDB connection error:', err);
-        this.db = null; // Ensure the db is null if connection fails
-      });
+    this.client = new MongoClient(url, { useUnifiedTopology: true });
+    this.client.connect().then(() => {
+      this.db = this.client.db(database);
+    }).catch((err) => {
+      console.error('Failed to connect to MongoDB', err);
+    });
   }
 
   isAlive() {
-    return this.isConnected;
+    return this.client.isConnected();
   }
 
   async nbUsers() {
-    try {
-      const count = await this.db.collection('users').countDocuments();
-      return count;
-    } catch (err) {
-      console.error('Error fetching user count:', err);
-      return 0;
-    }
+    return this.db.collection('users').countDocuments();
   }
 
   async nbFiles() {
-    try {
-      const count = await this.db.collection('files').countDocuments();
-      return count;
-    } catch (err) {
-      console.error('Error fetching file count:', err);
-      return 0;
-    }
+    return this.db.collection('files').countDocuments();
   }
 }
 
 const dbClient = new DBClient();
-
 export default dbClient;
