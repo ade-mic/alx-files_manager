@@ -10,12 +10,18 @@ class AppController {
   }
 
   static async getStats(req, res) {
+  try {
     const users = await dbClient.nbUsers();
     const files = await dbClient.nbFiles();
     res.status(200).json({
       users,
       files,
     });
+  } catch (error) {
+    res.status(500).json({
+      error: 'An error occured while retrieving stats'
+    })
+  }
   }
 }
 
