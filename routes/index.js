@@ -6,3 +6,5 @@ const router = Router();
 
 router.get('/status', AppController.getStatus);
 router.get('/stat', AppController.getStats);
+
+export default router;
