@@ -58,7 +58,7 @@ class AuthController {
         return res.status(401).json({ error: 'Unauthorized' });
       }
 
-      return res.status(204).send();
+      return res.status(204);
     } catch (error) {
       console.error('Error during disconnect:', error);
       return res.status(500).json({ error: 'Internal server error' });
