@@ -3,7 +3,7 @@ import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 import { use } from 'chai';
 
-class UserController {
+class UsersController {
   static async postNew(req, res) {
     const { email, password } = req.body;
 
@@ -59,4 +59,4 @@ class UserController {
   }
 }
 
-export default UserController;
+export default UsersController;
