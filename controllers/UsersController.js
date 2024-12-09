@@ -1,7 +1,9 @@
 import crypto from 'crypto';
 import dbClient from '../utils/db';
+import redisClient from '../utils/redis';
+import { use } from 'chai';
 
-class UsersController {
+class UserController {
   static async postNew(req, res) {
     const { email, password } = req.body;
 
@@ -35,6 +37,26 @@ class UsersController {
       email,
     });
   }
+
+  static async getMe(req, res) {
+    const token = req.header['x-token'];
+    if (!token) {
+      return res.status(401).json({ error: 'Unathorized'});
+    }
+    const key = `auth_${token}`;
+    const userId = await redisClient.get(key);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized'})
+    }
+
+    const user = await dbClient.getUserById(userId);
+    if (!user) {
+      return res.status(401).json({
+        error: 'Unauthorized'
+      })
+    }
+    return res.status(200).json({ id: user._id, email: user.email })
+  }
 }
 
-export default UsersController;
+export default UserController;
