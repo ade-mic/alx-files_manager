@@ -4,55 +4,7 @@ import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
 class UsersController {
-  /**
-   *
-   * create doc for this code import sha1 from 'sha1';
-   *
-   *Sure, here's the documentation for your UsersController class:
-
-   *UsersController.js
-   *The UsersController class handles user-related operations,
-   * including user registration and retrieving user
-   *Methods
-   *postNew(req, res)
-
-   *Description: Registers a new user by email and password.
-
-   *Parameters:
-
-   *req: The HTTP request object. Expects req.body to contain email and password.
-
-   *res: The HTTP response object.
-
-   *Response:
-
-   *Returns a 201 status code with the user's id and email if the user is successfully created.
-
-   *Returns a 400 status code if email or password is missing, or if the user already exists.
-
-   *Returns a 500 status code if an internal server error occurs.
-   */
   static async postNew(req, res) {
-    /**
-     *    *postNew(req, res)
-
-   *Description: Registers a new user by email and password.
-
-   *Parameters:
-
-   *req: The HTTP request object. Expects req.body to contain email and password.
-
-   *res: The HTTP response object.
-
-   *Response:
-
-   *Returns a 201 status code with the user's id and email if the user is successfully created.
-
-   *Returns a 400 status code if email or password is missing, or if the user already exists.
-
-   *Returns a 500 status code if an internal server error occurs.
-   */
-
     const { email, password } = req.body;
 
     if (!email) {
@@ -62,22 +14,30 @@ class UsersController {
       return res.status(400).json({ error: 'Missing password' });
     }
 
-    try {
-      const usersCollection = await dbClient.collection('users');
-      const existingUser = await usersCollection.findOne({ email });
+    const userCollection = await dbClient.collection('users');
 
-      if (existingUser) {
-        return res.status(400).json({ error: 'Already exist' });
-      }
-
-      const hashedPassword = sha1(password);
-      const result = await usersCollection.insertOne({ email, password: hashedPassword });
-
-      return res.status(201).json({ id: result.insertedId.toString(), email });
-    } catch (error) {
-      console.error('Error handling request:', error);
-      return res.status(500).json({ error: 'Internal server error' });
+    // Check if user already exists
+    const existingUser = await userCollection.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: 'Already exists' });
     }
+
+    // Hash password (simple example)
+    const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+
+    // Create new user
+    const newUser = {
+      email,
+      password: hashedPassword,
+    };
+
+    const result = await userCollection.insertOne(newUser);
+    const userId = result.insertedId.toString();
+
+    // Add job to the userQueue
+    await userQueue.add({ userId });
+
+    return res.status(201).json({ id: userId, email });
   }
 
   static async getMe(req, res) {
@@ -117,6 +77,8 @@ class UsersController {
       });
     }
   }
+
+  
 }
 
 export default UsersController;
