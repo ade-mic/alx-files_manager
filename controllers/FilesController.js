@@ -60,7 +60,7 @@ class FilesController {
     await fs.writeFile(localPath, Buffer.from(data, 'base64'));
 
     fileDocument.localPath = localPath;
-    const result = await fileCollection.insertOne(fileDocument)
+    const result = await fileCollection.insertOne(fileDocument);
 
     return res.status(201).json({ id: result.insertedId.toString(), ...fileDocument });
   }
