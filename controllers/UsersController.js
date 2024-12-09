@@ -4,7 +4,55 @@ import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
 class UsersController {
+  /**
+   *
+   * create doc for this code import sha1 from 'sha1';
+   *
+   *Sure, here's the documentation for your UsersController class:
+
+   *UsersController.js
+   *The UsersController class handles user-related operations,
+   * including user registration and retrieving user
+   *Methods
+   *postNew(req, res)
+
+   *Description: Registers a new user by email and password.
+
+   *Parameters:
+
+   *req: The HTTP request object. Expects req.body to contain email and password.
+
+   *res: The HTTP response object.
+
+   *Response:
+
+   *Returns a 201 status code with the user's id and email if the user is successfully created.
+
+   *Returns a 400 status code if email or password is missing, or if the user already exists.
+
+   *Returns a 500 status code if an internal server error occurs.
+   */
   static async postNew(req, res) {
+    /**
+     *    *postNew(req, res)
+
+   *Description: Registers a new user by email and password.
+
+   *Parameters:
+
+   *req: The HTTP request object. Expects req.body to contain email and password.
+
+   *res: The HTTP response object.
+
+   *Response:
+
+   *Returns a 201 status code with the user's id and email if the user is successfully created.
+
+   *Returns a 400 status code if email or password is missing, or if the user already exists.
+
+   *Returns a 500 status code if an internal server error occurs.
+   */
+
     const { email, password } = req.body;
 
     if (!email) {
@@ -33,6 +81,11 @@ class UsersController {
   }
 
   static async getMe(req, res) {
+    /**
+     * Retrieve the user based on the token:
+     * If not found, return an error Unauthorized with a status code 401
+     * Otherwise, return the user object (email and id only)
+     */
     try {
       const token = req.headers['x-token'];
 
