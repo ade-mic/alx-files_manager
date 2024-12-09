@@ -2,29 +2,25 @@ import { MongoClient } from 'mongodb';
 
 class DBClient {
   constructor() {
-    const host = process.env.DB_HOST || 'localhost';
-    const port = process.env.DB_PORT || 27017;
-    const database = process.env.DB_DATABASE || 'files_manager';
-    const url = `mongodb://${host}:${port}`;
+    const url = process.env.DB_URL || 'mongodb://127.0.0.1:27017';
+    const dbName = process.env.DB_NAME || 'files_manager';
 
     this.client = new MongoClient(url, { useUnifiedTopology: true });
     this.client.connect().then(() => {
-      this.db = this.client.db(database);
+      this.db = this.client.db(dbName);
+      console.log('Database connected successfully');
     }).catch((err) => {
-      console.error('Failed to connect to MongoDB', err);
+      console.error('Failed to connect to the database', err);
     });
   }
 
   isAlive() {
-    return Boolean(this.db);
+    return this.client && this.client.isConnected();
   }
 
-  async nbUsers() {
-    return this.db.collection('users').countDocuments();
-  }
-
-  async nbFiles() {
-    return this.db.collection('files').countDocuments();
+  async collection(name) {
+    if (!this.db) throw new Error('Database not connected yet');
+    return this.db.collection(name);
   }
 }
 
