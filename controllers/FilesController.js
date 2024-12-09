@@ -16,6 +16,8 @@ class FilesController {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
+    const fileCollection = await dbClient.collection('files');
+
     const {
       name, type, parentId = 0, isPublic = false, data,
     } = req.body;
@@ -30,7 +32,7 @@ class FilesController {
       return res.status(400).json({ error: 'Missing data' });
     }
 
-    const parentFile = parentId !== 0 ? await dbClient.collection('files').findOne({ _id: parentId }) : null;
+    const parentFile = parentId !== 0 ? await fileCollection.findOne({ _id: parentId }) : null;
     if (parentId !== 0 && !parentFile) {
       return res.status(400).json({ error: 'Parent not found' });
     }
@@ -45,8 +47,6 @@ class FilesController {
       isPublic,
       parentId,
     };
-
-    const fileCollection = await dbClient.collection('files');
 
     if (type === 'folder') {
       const result = await fileCollection.insertOne(fileDocument);
