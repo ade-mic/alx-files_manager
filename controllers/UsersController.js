@@ -1,4 +1,4 @@
-import sha1 from 'sha1';
+import crypto from 'crypto'
 import dbClient from '../utils/db';
 
 class UsersController {
@@ -23,17 +23,17 @@ class UsersController {
       }
 
       // Hash the password
-      const hashedPassword = sha1(password);
+      const hashedPassword = crypto.createHash('sha1').update(password).digest('hex');
 
       // Create the new user in the database
-      const result = await dbClient.db.collection('users').insertOne({
+      const result = await existingUser.insertOne({
         email,
         password: hashedPassword,
       });
 
       // Respond with the created user's email and id
       return res.status(201).json({
-        id: result.insertedId,
+        id: result.insertedId.toString(),
         email,
       });
     } catch (error) {
